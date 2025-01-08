@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "canvas": "^3.0.1",
+    "fs": "^0.0.1-security"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5"
+  }
+}
