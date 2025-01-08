@@ -10,8 +10,12 @@ type Pixel = {
   a: number;
 };
 
-// Function to sort pixels and create a glitch effect
-async function pixelSort(imagePath: string, outputPath: string) {
+// Function to sort pixels and create a glitch effect in specified regions
+async function pixelSort(
+  imagePath: string,
+  outputPath: string,
+  regions: { x: number; y: number; width: number; height: number }[]
+) {
   try {
     // Load the image
     const image = await loadImage(imagePath);
@@ -23,34 +27,36 @@ async function pixelSort(imagePath: string, outputPath: string) {
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const pixels = imageData.data;
 
-    // Process the pixels row by row
-    for (let y = 0; y < canvas.height; y++) {
-      // Extract a single row of pixels
-      const row: Pixel[] = []; // Explicitly define the type
-      for (let x = 0; x < canvas.width; x++) {
-        const i = (y * canvas.width + x) * 4; // Calculate index
-        row.push({
-          r: pixels[i],
-          g: pixels[i + 1],
-          b: pixels[i + 2],
-          a: pixels[i + 3],
+    // Process each specified region
+    for (const region of regions) {
+      for (let y = region.y; y < region.y + region.height; y++) {
+        const row: Pixel[] = [];
+        for (let x = region.x; x < region.x + region.width; x++) {
+          const i = (y * canvas.width + x) * 4;
+          row.push({
+            r: pixels[i],
+            g: pixels[i + 1],
+            b: pixels[i + 2],
+            a: pixels[i + 3],
+          });
+        }
+
+        // Sort the row of pixels by brightness
+        row.sort((a, b) => {
+          const brightnessA = 0.2126 * a.r + 0.7152 * a.g + 0.0722 * a.b;
+          const brightnessB = 0.2126 * b.r + 0.7152 * b.g + 0.0722 * b.b;
+          return brightnessA - brightnessB;
         });
-      }
 
-      // Sort the row of pixels by brightness to create a glitch effect
-      row.sort((a, b) => {
-        const brightnessA = 0.2126 * a.r + 0.7152 * a.g + 0.0722 * a.b;
-        const brightnessB = 0.2126 * b.r + 0.7152 * b.g + 0.0722 * b.b;
-        return brightnessA - brightnessB;
-      });
-
-      // Write the sorted pixels back to the image
-      for (let x = 0; x < canvas.width; x++) {
-        const i = (y * canvas.width + x) * 4;
-        pixels[i] = row[x].r;
-        pixels[i + 1] = row[x].g;
-        pixels[i + 2] = row[x].b;
-        pixels[i + 3] = row[x].a;
+        // Write the sorted pixels back to the image
+        for (let x = region.x; x < region.x + region.width; x++) {
+          const i = (y * canvas.width + x) * 4;
+          const pixel = row[x - region.x];
+          pixels[i] = pixel.r;
+          pixels[i + 1] = pixel.g;
+          pixels[i + 2] = pixel.b;
+          pixels[i + 3] = pixel.a;
+        }
       }
     }
 
@@ -66,7 +72,13 @@ async function pixelSort(imagePath: string, outputPath: string) {
 }
 
 // Usage
-const inputImagePath = "input_image.png"; // Path to your input image
-const outputImagePath = "output_image.png"; // Path to save the glitchy image
+const inputImagePath = "/Users/fawazbutt/Desktop/Messingaround/PoW.jpeg";
+const outputImagePath = "output_image.png";
 
-pixelSort(inputImagePath, outputImagePath);
+// Define regions to apply the glitch effect
+const regions = [
+  { x: 0, y: 0, width: 100, height: 100 }, // Top-left corner
+  { x: 200, y: 200, width: 150, height: 150 }, // Another region
+];
+
+pixelSort(inputImagePath, outputImagePath, regions);

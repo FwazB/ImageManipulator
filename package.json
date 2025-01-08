@@ -4,6 +4,12 @@
     "fs": "^0.0.1-security"
   },
   "devDependencies": {
-    "@types/node": "^22.10.5"
+    "@types/node": "^22.10.5",
+    "tsx": "^4.7.0",
+    "typescript": "^5.0.0"
+  },
+  "type": "module",
+  "scripts": {
+    "start": "tsx imagemanip.ts"
   }
 }
