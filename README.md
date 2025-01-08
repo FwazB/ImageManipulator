@@ -15,12 +15,11 @@ Pixel Sorter is a TypeScript-based tool that applies a glitch effect to images b
 
 To set up the project locally, follow these steps:
 Clone the repository
-git clone https://github.com/yourusername/pixel-sorter.git
 Navigate to the project directory
 cd pixel-sorter
 Install dependencies
 npm install
-
+node script.ts
 
 Ensure you have an input image named `input_image.png` in the project directory, or modify the script to point to your desired image file.
 
